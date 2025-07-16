@@ -2,12 +2,13 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
+import { groq } from "@ai-sdk/groq"
 import { savePitch } from "@/lib/actions/pitches"
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies()
+    // Await cookies() before using it
+    const cookieStore = await cookies()
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
     const {
@@ -24,11 +25,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Generate pitch using AI SDK
+    // Generate pitch using Groq AI SDK
     const prompt = createPitchPrompt(idea, type, details)
 
     const { text: generatedPitch } = await generateText({
-      model: openai("gpt-4o"),
+      model: groq("llama-3.1-8b-instant"), // Updated to a currently supported and fast model
       prompt,
       temperature: 0.7,
       maxTokens: 1000,

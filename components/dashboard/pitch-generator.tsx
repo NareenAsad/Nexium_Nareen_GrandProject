@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, Sparkles } from "lucide-react"
+import { Loader2, Sparkles, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const pitchTypes = [
@@ -66,7 +66,7 @@ export function PitchGenerator() {
       console.error("Pitch generation error:", error)
       toast({
         title: "Generation failed",
-        description: error instanceof Error ? error.message : "Please check your OpenAI API key and try again.",
+        description: error instanceof Error ? error.message : "Please check your Groq API key and try again.",
         variant: "destructive",
       })
     } finally {
@@ -79,10 +79,13 @@ export function PitchGenerator() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Sparkles className="w-5 h-5 mr-2 text-blue-600" />
+            <Zap className="w-5 h-5 mr-2 text-purple-600" />
             Generate New Pitch
+            <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Powered by Groq</span>
           </CardTitle>
-          <CardDescription>Describe your idea and let AI create a compelling pitch for you.</CardDescription>
+          <CardDescription>
+            Describe your idea and let Groq's lightning-fast AI create a compelling pitch for you.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -126,10 +129,13 @@ export function PitchGenerator() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Generating...
+                Generating with Groq...
               </>
             ) : (
-              "Generate Pitch"
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Generate Pitch
+              </>
             )}
           </Button>
         </CardContent>

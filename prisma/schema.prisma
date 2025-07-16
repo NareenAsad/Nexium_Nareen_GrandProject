@@ -4,11 +4,13 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL")
+  url      = env("MONGODB_URI")
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  // Supabase user IDs are UUID strings, so we store them directly as String
+  // Removed @unique as @id implies uniqueness on MongoDB
+  id        String   @id @map("_id")
   email     String   @unique
   name      String?
   createdAt DateTime @default(now())
@@ -19,8 +21,9 @@ model User {
 }
 
 model Pitch {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId // MongoDB will generate ObjectId for Pitch itself
+  // userId will store the Supabase UUID (String)
+  userId    String
   title     String
   content   String
   type      String
