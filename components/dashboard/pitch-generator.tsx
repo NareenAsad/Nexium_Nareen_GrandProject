@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Sparkles, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 const pitchTypes = [
   { value: "startup", label: "Startup Pitch" },
@@ -148,8 +150,10 @@ export function PitchGenerator() {
             <CardDescription>Your AI-generated pitch is ready. You can copy, edit, or save it.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <pre className="whitespace-pre-wrap text-sm text-slate-700">{generatedPitch}</pre>
+            <div className="bg-slate-50 p-4 rounded-lg prose prose-slate max-w-none">
+              {" "}
+              {/* Added prose classes */}
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedPitch}</ReactMarkdown>
             </div>
             <div className="flex gap-2 mt-4">
               <Button variant="outline" onClick={() => navigator.clipboard.writeText(generatedPitch)}>

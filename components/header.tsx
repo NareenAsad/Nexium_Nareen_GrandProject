@@ -11,24 +11,10 @@ export function Header() {
           <span className="text-xl font-bold text-slate-900">AI Pitch Writer</span>
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="#features" className="text-slate-600 hover:text-slate-900">
-            Features
-          </Link>
-          <Link href="#pricing" className="text-slate-600 hover:text-slate-900">
-            Pricing
-          </Link>
-          <Link href="#examples" className="text-slate-600 hover:text-slate-900">
-            Examples
-          </Link>
-        </nav>
 
         <div className="flex items-center space-x-4">
           <Link href="/auth">
             <Button variant="ghost">Sign In</Button>
-          </Link>
-          <Link href="/auth">
-            <Button>Get Started</Button>
           </Link>
         </div>
       </div>

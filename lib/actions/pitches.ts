@@ -1,4 +1,7 @@
+"use server" // Moved to the very top of the file
+
 import { prisma } from "@/lib/prisma"
+import { ObjectId } from "mongodb"
 
 export interface CreatePitchData {
   userId: string
@@ -42,6 +45,11 @@ export async function getUserPitches(userId: string) {
 
 export async function getPitchById(id: string, userId: string) {
   try {
+    // Validate id as ObjectId for MongoDB
+    if (!ObjectId.isValid(id)) {
+      console.error("Invalid pitch ID format:", id)
+      return null
+    }
     const pitch = await prisma.pitch.findFirst({
       where: { id, userId },
     })
@@ -49,5 +57,31 @@ export async function getPitchById(id: string, userId: string) {
   } catch (error) {
     console.error("Error fetching pitch:", error)
     return null
+  }
+}
+
+// Delete Pitch Action (now part of the "use server" file)
+export async function deletePitch(id: string, userId: string) {
+  try {
+    // Validate id as ObjectId for MongoDB
+    if (!ObjectId.isValid(id)) {
+      throw new Error("Invalid pitch ID format.")
+    }
+
+    const result = await prisma.pitch.deleteMany({
+      where: {
+        id,
+        userId, // Ensure only the owner can delete
+      },
+    })
+
+    if (result.count === 0) {
+      throw new Error("Pitch not found or you don't have permission to delete it.")
+    }
+
+    return { success: true, message: "Pitch deleted successfully." }
+  } catch (error) {
+    console.error("Error deleting pitch:", error)
+    return { success: false, message: error instanceof Error ? error.message : "Failed to delete pitch." }
   }
 }

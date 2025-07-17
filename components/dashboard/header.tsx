@@ -5,10 +5,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { LogOut, User, Settings } from "lucide-react"
 import { useAuth } from "@/app/providers"
-import type { User as SupabaseUser } from "@supabase/auth-helpers-nextjs"
+import Link from "next/link"
 
 interface DashboardHeaderProps {
-  user: SupabaseUser
+  // Make email optional to match Supabase User type
+  user: {
+    id: string
+    email?: string | null // Changed to optional
+  }
 }
 
 export function DashboardHeader({ user }: DashboardHeaderProps) {
@@ -36,14 +40,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end">
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Sign out

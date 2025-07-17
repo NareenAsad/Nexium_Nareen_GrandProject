@@ -7,8 +7,7 @@ import { PitchHistory } from "@/components/dashboard/pitch-history"
 import { getUserPitches } from "@/lib/actions/pitches"
 
 export default async function DashboardPage() {
-  const cookieStore = cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
+  const supabase = createServerComponentClient({ cookies })
 
   const {
     data: { user },
@@ -22,14 +21,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <DashboardHeader user={user} />
+      <DashboardHeader user={user} /> {/* Pass user directly */}
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <PitchGenerator />
           </div>
           <div>
-            <PitchHistory pitches={pitches} />
+            <PitchHistory pitches={pitches} userId={user.id} />
           </div>
         </div>
       </main>

@@ -7,9 +7,8 @@ import { savePitch } from "@/lib/actions/pitches"
 
 export async function POST(request: NextRequest) {
   try {
-    // Await cookies() before using it
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    // Pass the cookies function directly to createRouteHandlerClient
+    const supabase = createRouteHandlerClient({ cookies })
 
     const {
       data: { user },
