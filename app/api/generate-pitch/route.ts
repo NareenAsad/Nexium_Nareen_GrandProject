@@ -56,54 +56,58 @@ export async function POST(request: NextRequest) {
 function createPitchPrompt(idea: string, type: string, details?: string): string {
   const basePrompts = {
     startup: `Create a compelling startup pitch for the following idea: "${idea}"
-    
-    Structure the pitch with:
-    1. Problem Statement - What problem does this solve?
-    2. Solution - How does your idea solve it?
-    3. Market Opportunity - Who is your target market?
-    4. Business Model - How will you make money?
-    5. Competitive Advantage - What makes you unique?
-    6. Call to Action - What do you need from investors/partners?
-    
-    Make it professional, concise, and compelling. Aim for 300-500 words.`,
+
+Structure the pitch with the following sections. Each section should be clearly labeled (e.g., "**1. Problem Statement**") and followed by a detailed paragraph or bullet points:
+
+1. Problem Statement - What problem does this solve?
+2. Solution - How does your idea solve it?
+3. Market Opportunity - Who is your target market?
+4. Business Model - How will you make money?
+5. Competitive Advantage - What makes you unique?
+6. Call to Action - What do you need from investors/partners?
+
+Make it professional, concise, and compelling. Aim for 300-500 words.`,
 
     product: `Create a professional product launch pitch for: "${idea}"
-    
-    Include:
-    1. Product Overview - What is it and what does it do?
-    2. Key Features & Benefits - Why should people care?
-    3. Target Audience - Who will use this?
-    4. Market Positioning - How does it fit in the market?
-    5. Launch Strategy - How will you bring it to market?
-    6. Success Metrics - How will you measure success?
-    
-    Make it engaging and market-ready. Aim for 300-500 words.`,
+
+Format your response using the following labeled sections, each followed by a detailed paragraph or bullet points:
+
+1. Product Overview - What is it and what does it do?
+2. Key Features & Benefits - Why should people care?
+3. Target Audience - Who will use this?
+4. Market Positioning - How does it fit in the market?
+5. Launch Strategy - How will you bring it to market?
+6. Success Metrics - How will you measure success?
+
+Make it engaging and market-ready. Aim for 300-500 words.`,
 
     personal: `Create a compelling personal brand pitch for: "${idea}"
-    
-    Structure it with:
-    1. Personal Introduction - Who are you?
-    2. Unique Value Proposition - What makes you special?
-    3. Experience & Expertise - What's your background?
-    4. Vision & Goals - Where are you headed?
-    5. How You Help Others - What value do you provide?
-    6. Call to Action - How can people connect with you?
-    
-    Make it authentic and professional. Aim for 250-400 words.`,
+
+Structure it clearly using the following headings. Write each section as a distinct paragraph or bullet points:
+
+1. Personal Introduction - Who are you?
+2. Unique Value Proposition - What makes you special?
+3. Experience & Expertise - What's your background?
+4. Vision & Goals - Where are you headed?
+5. How You Help Others - What value do you provide?
+6. Call to Action - How can people connect with you?
+
+Make it authentic and professional. Aim for 250-400 words.`,
 
     investor: `Create a professional investor presentation pitch for: "${idea}"
-    
-    Include these key sections:
-    1. Executive Summary - Brief overview of the opportunity
-    2. Problem & Solution - Clear problem-solution fit
-    3. Market Analysis - Size, growth, and opportunity
-    4. Business Model - Revenue streams and monetization
-    5. Financial Projections - Key metrics and growth potential
-    6. Team - Why you're the right team to execute
-    7. Funding Ask - How much you need and what for
-    8. ROI Potential - Expected returns for investors
-    
-    Make it data-driven and compelling. Aim for 400-600 words.`,
+
+Use the following section headings and write a paragraph or bullet points under each:
+
+1. Executive Summary - Brief overview of the opportunity
+2. Problem & Solution - Clear problem-solution fit
+3. Market Analysis - Size, growth, and opportunity
+4. Business Model - Revenue streams and monetization
+5. Financial Projections - Key metrics and growth potential
+6. Team - Why you're the right team to execute
+7. Funding Ask - How much you need and what for
+8. ROI Potential - Expected returns for investors
+
+Make it data-driven and compelling. Aim for 400-600 words.`,
   }
 
   let prompt = basePrompts[type as keyof typeof basePrompts] || basePrompts.startup
@@ -112,7 +116,7 @@ function createPitchPrompt(idea: string, type: string, details?: string): string
     prompt += `\n\nAdditional context to incorporate: ${details}`
   }
 
-  prompt += `\n\nWrite in a professional, engaging tone that would impress potential stakeholders. Use clear, concise language and focus on the value proposition.`
+  prompt += `\n\nEnsure each section heading is clearly labeled with a number or title. Use professional, persuasive language suitable for pitching to stakeholders.`
 
   return prompt
 }
