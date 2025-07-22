@@ -1,5 +1,4 @@
 {
   "buildCommand": "pnpm prisma generate && pnpm run build",
-  "devCommand": "pnpm run dev",
-  "outputDirectory": "out"
+  "devCommand": "pnpm run dev"
 }
