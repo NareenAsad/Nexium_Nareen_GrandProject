@@ -1,4 +1,4 @@
-/ Force Node.js runtime to support AI SDKs like Groq
+// Force Node.js runtime to support AI SDKs like Groq
 export const runtime = "nodejs"
 
 import { type NextRequest, NextResponse } from "next/server"
