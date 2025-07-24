@@ -19,7 +19,7 @@ The AI Pitch Writer is a powerful web application designed to help entrepreneurs
 ## 🛠️ Technologies Used
 
 *   **Framework:** Next.js 15 (App Router)
-*   **React:** React 19 (Specific Release Candidate for Next.js 15.0.3 compatibility)
+*   **React:** React 18
 *   **Styling:** Tailwind CSS
 *   **UI Components:** shadcn/ui
 *   **Animations:** Framer Motion
