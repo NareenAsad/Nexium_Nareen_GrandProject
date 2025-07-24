@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { FileText, Calendar } from "lucide-react"
 import Link from "next/link"
-import { DeletePitchButton } from "@/components/delete-pitch-button" // Import the new component
-import { useRouter } from "next/navigation" // Import useRouter for refresh
+import { DeletePitchButton } from "@/components/delete-pitch-button"
+import { useRouter } from "next/navigation"
 
 interface Pitch {
   id: string

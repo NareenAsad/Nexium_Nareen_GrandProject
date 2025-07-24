@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const prompt = createPitchPrompt(idea, type, details)
 
     const { text: generatedPitch } = await generateText({
-      model: groq("llama-3.1-8b-instant"), // Updated to a currently supported and fast model
+      model: groq("llama-3.1-8b-instant"),
       prompt,
       temperature: 0.7,
       maxTokens: 1000,

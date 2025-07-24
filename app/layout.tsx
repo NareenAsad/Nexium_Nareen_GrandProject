@@ -11,8 +11,6 @@ export const metadata: Metadata = {
   title: "AI Pitch Writer - Generate Professional Pitches",
   description:
     "Create compelling pitches for your startup, product, or personal brand using AI-powered writing assistance.",
-  keywords: "AI pitch writer, startup pitch, business pitch, pitch generator",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
