@@ -74,7 +74,6 @@ GROQ_API_KEY=gsk_YOUR_GROQ_API_KEY
 *   **MongoDB Setup:** Ensure you have a MongoDB Atlas cluster set up and replace `<username>`, `<password>`, `<cluster-name>`, and `<dbname>` with your actual database credentials.
 *   **Supabase Setup:** Create a Supabase project and configure authentication (e.g., Email Magic Link). Get your project URL and Anon Key from your Supabase project settings.
 *   **Groq API Key:** Obtain an API key from Groq and replace `gsk_YOUR_GROQ_API_KEY`.
-*   **NEXTAUTH_SECRET:** Generate a strong random string for `NEXTAUTH_SECRET` (e.g., using `openssl rand -base64 32`).
 
 ### 4. Initialize Prisma and Push Schema
 
@@ -99,25 +98,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 npm run build
 \`\`\`
 
-## 🚀 Deployment
-
-This application is designed to be easily deployed on [Vercel](https://vercel.com/).
-
-**Important for Vercel Deployment:**
-Due to peer dependency conflicts with React 19 Release Candidates, you might need to adjust the build command in your Vercel project settings.
-
-1.  Go to your Vercel project dashboard.
-2.  Navigate to **Settings > Git**.
-3.  Under **Build & Development Settings**, change the **Build Command** to:
-    \`\`\`bash
-    npm install --legacy-peer-deps && next build
-    \`\`\`
-4.  Save the changes and trigger a new deployment.
-
 ## 🤝 Contributing
 
 Contributions are welcome! If you have suggestions for improvements or find any bugs, please open an issue or submit a pull request.
-
-## 📄 License
-
-[MIT License](LICENSE)
