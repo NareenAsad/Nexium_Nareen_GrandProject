@@ -12,15 +12,15 @@ export default function AuthCallbackPage() {
     const handleSession = async () => {
       const { data, error } = await supabase.auth.getSession()
 
-      if (error || !data.session) {
-        router.push('/auth')
-      } else {
+      if (data?.session) {
         router.push('/dashboard')
+      } else {
+        router.push('/auth')
       }
     }
 
     handleSession()
-  }, [router, supabase])
+  }, [])
 
   return <p className="text-center mt-20">Logging you in, please wait...</p>
 }
