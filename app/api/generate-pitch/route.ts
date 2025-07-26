@@ -1,4 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { cookies } from "next/headers"
+import { generateText } from "ai"
+import { groq } from "@ai-sdk/groq"
+import { savePitch } from "@/lib/actions/pitches"
 
 export async function POST(request: NextRequest) {
   try {
