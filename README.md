@@ -46,6 +46,7 @@ Make sure you have the following installed:
 git clone https://github.com/NareenAsad/AI-Powered-Web-App.git
 cd AI-Powered-Web-App
 
+
 ### 2. Install Dependencies
 
 \`\`\`bash
