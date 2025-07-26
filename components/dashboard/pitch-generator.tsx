@@ -23,7 +23,10 @@ export function PitchGenerator() {
   const [idea, setIdea] = useState("")
   const [type, setType] = useState("")
   const [details, setDetails] = useState("")
-  const [generatedPitch, setGeneratedPitch] = useState("")
+  const [generatedPitch, setGeneratedPitch] = useState<{
+    title: string;
+    pitch: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
@@ -44,7 +47,7 @@ export function PitchGenerator() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ idea, type, details }),
+        body: JSON.stringify({ idea, pitchType: type, details }),
       })
 
       if (!response.ok) {
@@ -53,26 +56,73 @@ export function PitchGenerator() {
       }
 
       const data = await response.json()
-      setGeneratedPitch(data.pitch)
+      console.log("Generated pitch response:", data)
+
+      // Expecting { title: string, pitch: string }
+      setGeneratedPitch({
+      title: data.title || "",
+      pitch: data.pitch || "",
+      })
 
       toast({
         title: "Pitch generated successfully!",
-        description: "Your AI-powered pitch is ready to use.",
+        description: "Your AI-powered pitch is ready.",
       })
-
-      // Clear form after successful generation
-      setIdea("")
-      setDetails("")
-      setType("")
     } catch (error) {
       console.error("Pitch generation error:", error)
       toast({
         title: "Generation failed",
-        description: error instanceof Error ? error.message : "Please check your Groq API key and try again.",
+        description: error instanceof Error ? error.message : "Unexpected error.",
         variant: "destructive",
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSaveTemplate = async () => {
+    if (!generatedPitch) return
+
+    try {
+      const pitchLabel = pitchTypes.find((p) => p.value === type)?.label || "Pitch"
+      const shortTitle = idea.length > 50 ? idea.slice(0, 47) + "..." : idea
+
+      const formattedContent = `
+${pitchLabel}: ${shortTitle}
+${type}
+Generated on ${new Date().toLocaleDateString("en-GB")}
+
+${generatedPitch.pitch}
+      `.trim()
+
+      const response = await fetch("/api/save-pitch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: formattedContent,
+          title: `${pitchLabel}: ${shortTitle}`,
+          pitchType: type,
+          idea,
+          details,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to save pitch")
+      }
+
+      toast({
+        title: "Template saved",
+        description: "Your pitch has been saved successfully.",
+      })
+    } catch (error) {
+      toast({
+        title: "Save failed",
+        description: error instanceof Error ? error.message : "Something went wrong.",
+        variant: "destructive",
+      })
     }
   }
 
@@ -83,10 +133,9 @@ export function PitchGenerator() {
           <CardTitle className="flex items-center">
             <Zap className="w-5 h-5 mr-2 text-purple-600" />
             Generate New Pitch
-            <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Powered by Groq</span>
           </CardTitle>
           <CardDescription>
-            Describe your idea and let Groq's lightning-fast AI create a compelling pitch for you.
+            Describe your idea and generate a compelling pitch using AI.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -131,7 +180,7 @@ export function PitchGenerator() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Generating with Groq...
+                Generating pitch...
               </>
             ) : (
               <>
@@ -146,20 +195,22 @@ export function PitchGenerator() {
       {generatedPitch && (
         <Card>
           <CardHeader>
-            <CardTitle>Generated Pitch</CardTitle>
+            <CardTitle>{generatedPitch.title}</CardTitle>
             <CardDescription>Your AI-generated pitch is ready. You can copy, edit, or save it.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="bg-slate-50 p-4 rounded-lg prose prose-slate max-w-none">
-              {" "}
-              {/* Added prose classes */}
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedPitch}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {generatedPitch.pitch}
+              </ReactMarkdown>
             </div>
             <div className="flex gap-2 mt-4">
-              <Button variant="outline" onClick={() => navigator.clipboard.writeText(generatedPitch)}>
+              <Button variant="outline" onClick={() => navigator.clipboard.writeText(generatedPitch.pitch)}>
                 Copy to Clipboard
               </Button>
-              <Button variant="outline">Save as Template</Button>
+              <Button variant="outline" onClick={handleSaveTemplate}>
+                Save as Template
+              </Button>
             </div>
           </CardContent>
         </Card>

@@ -2,9 +2,9 @@ import { redirect } from "next/navigation"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { DashboardHeader } from "@/components/dashboard/header"
-import { PitchGenerator } from "@/components/dashboard/pitch-generator"
 import { PitchHistory } from "@/components/dashboard/pitch-history"
 import { getUserPitches } from "@/lib/actions/pitches"
+import { PitchGenerator } from "@/components/dashboard/pitch-generator"
 
 export default async function DashboardPage() {
   const supabase = createServerComponentClient({ cookies })

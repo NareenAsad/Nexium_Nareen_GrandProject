@@ -1,0 +1,95 @@
+{
+  "name": "Generate Pitch via GROQ",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-pitch",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "\nconst idea = $json[\"idea\"];\nconst type = $json[\"type\"];\nconst details = $json[\"details\"];\n\nconst basePrompts = {\n  startup: `Create a compelling startup pitch for the following idea: \"${idea}\"\n\nStructure the pitch with the following sections. Each section should be clearly labeled (e.g., \"**1. Problem Statement**\") and followed by a detailed paragraph or bullet points:\n\n1. Problem Statement - What problem does this solve?\n2. Solution - How does your idea solve it?\n3. Market Opportunity - Who is your target market?\n4. Business Model - How will you make money?\n5. Competitive Advantage - What makes you unique?\n6. Call to Action - What do you need from investors/partners?\n\nMake it professional, concise, and compelling. Aim for 300-500 words.`,\n  product: `Create a professional product launch pitch for: \"${idea}\"\n\nFormat your response using the following labeled sections, each followed by a detailed paragraph or bullet points:\n\n1. Product Overview - What is it and what does it do?\n2. Key Features & Benefits - Why should people care?\n3. Target Audience - Who will use this?\n4. Market Positioning - How does it fit in the market?\n5. Launch Strategy - How will you bring it to market?\n6. Success Metrics - How will you measure success?\n\nMake it engaging and market-ready. Aim for 300-500 words.`,\n  personal: `Create a compelling personal brand pitch for: \"${idea}\"\n\nStructure it clearly using the following headings. Write each section as a distinct paragraph or bullet points:\n\n1. Personal Introduction - Who are you?\n2. Unique Value Proposition - What makes you special?\n3. Experience & Expertise - What's your background?\n4. Vision & Goals - Where are you headed?\n5. How You Help Others - What value do you provide?\n6. Call to Action - How can people connect with you?\n\nMake it authentic and professional. Aim for 250-400 words.`,\n  investor: `Create a professional investor presentation pitch for: \"${idea}\"\n\nUse the following section headings and write a paragraph or bullet points under each:\n\n1. Executive Summary - Brief overview of the opportunity\n2. Problem & Solution - Clear problem-solution fit\n3. Market Analysis - Size, growth, and opportunity\n4. Business Model - Revenue streams and monetization\n5. Financial Projections - Key metrics and growth potential\n6. Team - Why you're the right team to execute\n7. Funding Ask - How much you need and what for\n8. ROI Potential - Expected returns for investors\n\nMake it data-driven and compelling. Aim for 400-600 words.`\n};\n\nlet prompt = basePrompts[type] || basePrompts.startup;\n\nif (details) {\n  prompt += `\\n\\nAdditional context to incorporate: ${details}`;\n}\n\nprompt += `\\n\\nEnsure each section heading is clearly labeled with a number or title. Use professional, persuasive language suitable for pitching to stakeholders.`;\n\nreturn [{ json: { prompt } }];\n"
+      },
+      "id": "2",
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3-8b-instruct",
+        "messages": [
+          {
+            "role": "user",
+            "text": "={{$json[\"prompt\"]}}"
+          }
+        ],
+        "temperature": 0.7,
+        "maxTokens": 1000
+      },
+      "id": "3",
+      "name": "Groq Chat Model",
+      "type": "n8n-nodes-base.groqChatModel",
+      "typeVersion": 1,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "responseData": {
+          "response": {
+            "pitch": "={{$json[\"message\"]}}"
+          }
+        }
+      },
+      "id": "4",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          "Build Prompt"
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          "Groq Chat Model"
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "main": [
+        [
+          "Respond to Webhook"
+        ]
+      ]
+    }
+  }
+}
