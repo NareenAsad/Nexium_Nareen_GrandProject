@@ -1,33 +1,48 @@
-import { savePitch } from "@/lib/actions/pitches"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { createServerClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
-import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = createRouteHandlerClient({ cookies })
+export async function POST(req: Request) {
+  const supabase = createServerClient({ cookies })
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+  const {
+    title,
+    content,
+    idea,
+    details,
+    pitchType,
+  } = await req.json()
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  // ✅ Get authenticated user
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-    const { content, title, pitchType: type, idea, details } = await request.json()
-
-    const savedPitch = await savePitch({
-      userId: user.id,
-      title,
-      content,
-      type,
-      metadata: { idea, details },
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Not authenticated" }), {
+      status: 401,
     })
-
-    return NextResponse.json({ success: true, pitchId: savedPitch.id })
-  } catch (error) {
-    console.error("Save pitch error:", error)
-    return NextResponse.json({ error: "Failed to save pitch." }, { status: 500 })
   }
+
+  // ✅ Save pitch to database
+  const { error: insertError } = await supabase
+    .from("pitches")
+    .insert([
+      {
+        user_id: user.id,
+        title,
+        content,
+        idea,
+        details,
+        pitch_type: pitchType,
+      },
+    ])
+
+  if (insertError) {
+    return new Response(JSON.stringify({ error: insertError.message }), {
+      status: 500,
+    })
+  }
+
+  return new Response(JSON.stringify({ success: true }))
 }
