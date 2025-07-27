@@ -1,0 +1,147 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-pitch",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "230ad382-2bf1-4940-97d1-2b3a385af866",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        96,
+        128
+      ],
+      "webhookId": "65486057-499f-45b4-bf4a-445c5be216da"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        144
+      ],
+      "id": "5dbe8c69-7998-4198-abf1-f9ace7415110",
+      "name": "When chat message received",
+      "webhookId": "b0fbff66-9320-4c5c-aea7-7137f24c0845"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        768,
+        144
+      ],
+      "id": "99e14623-72b9-41dd-988e-13741fee56e2",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        976,
+        144
+      ],
+      "id": "4bf31129-8ade-461c-bce8-0c098ba3760e",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "cA7ErYGN7oRupwMC",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Get the data from the webhook input\nconst item = $json;\n\n// Extract values safely\nconst idea = item.body?.idea || \"No idea provided\";\nconst pitchType = item.body?.pitchType;\n\n// Define updated base prompts\nconst basePrompts = {\n  startup: `Create a compelling startup pitch for the following idea: \"${idea}\"\n\nStructure the pitch with the following sections. Each section should be clearly labeled (e.g., \"**1. Problem Statement**\") and followed by a detailed paragraph or bullet points:\n\n1. Problem Statement - What problem does this solve?\n2. Solution - How does your idea solve it?\n3. Market Opportunity - Who is your target market?\n4. Business Model - How will you make money?\n5. Competitive Advantage - What makes you unique?\n6. Call to Action - What do you need from investors/partners?\n\nMake it professional, concise, and compelling. Aim for 300-500 words.`,\n\n  product: `Create a professional product launch pitch for: \"${idea}\"\n\nFormat your response using the following labeled sections, each followed by a detailed paragraph or bullet points:\n\n1. Product Overview - What is it and what does it do?\n2. Key Features & Benefits - Why should people care?\n3. Target Audience - Who will use this?\n4. Market Positioning - How does it fit in the market?\n5. Launch Strategy - How will you bring it to market?\n6. Success Metrics - How will you measure success?\n\nMake it engaging and market-ready. Aim for 300-500 words.`,\n\n  personal: `Create a compelling personal brand pitch for: \"${idea}\"\n\nStructure it clearly using the following headings. Write each section as a distinct paragraph or bullet points:\n\n1. Who You Are – Introduce yourself and your current focus or role.\n2. What Drives You – Share the passion or purpose behind your work.\n3. What You’ve Done – Highlight key achievements, experiences, or milestones.\n4. What You Stand For – Outline your values, principles, or mission.\n5. Who You Help – Describe your audience or the people/companies you serve.\n6. What You’re Aiming For – Share your future goals and aspirations.\n7. How to Connect – Give a clear and inviting call to action.\n\nKeep the tone confident, authentic, and professional. Aim for 250–400 words.`,\n\n  investor: `Create a professional investor presentation pitch for: \"${idea}\"\n\nUse the following section headings and write a paragraph or bullet points under each:\n\n1. Executive Summary - Brief overview of the opportunity\n2. Problem & Solution - Clear problem-solution fit\n3. Market Analysis - Size, growth, and opportunity\n4. Business Model - Revenue streams and monetization\n5. Financial Projections - Key metrics and growth potential\n6. Team - Why you're the right team to execute\n7. Funding Ask - How much you need and what for\n8. ROI Potential - Expected returns for investors\n\nMake it data-driven and compelling. Aim for 400-600 words.`\n};\n\n// Select and finalize prompt\nlet prompt = basePrompts[pitchType];\n\nprompt += `Ensure each section heading is clearly labeled with a number or title. Use professional, persuasive language suitable for pitching to stakeholders.`;\n\n// Return prompt as output\nreturn {\n  json: {\n    idea,\n    pitchType,\n    prompt\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        128
+      ],
+      "id": "d578717e-a655-41aa-a135-330a9caa8cee",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8572ff1d-bb1d-45c7-8fee-417eef778999",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "479d74d77119ade8d6b2149282ff13654b8121ea60a6cafa5dc05cde942dbb25"
+  },
+  "id": "65xWtXxDOJvXo0ug",
+  "tags": []
+}

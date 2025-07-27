@@ -2,31 +2,31 @@
 
 ## 🚀 Project Overview
 
-The AI Pitch Writer is a powerful web application designed to help entrepreneurs, product managers, job seekers, and sales professionals quickly generate compelling and professional pitches using advanced Artificial Intelligence. Whether you need a startup pitch, a product launch presentation, a personal brand statement, or an investor deck, this app leverages AI to craft tailored content in minutes.
+The AI Pitch Writer is a powerful web application designed to help entrepreneurs, product managers, job seekers, and sales professionals quickly generate compelling and professional pitches using advanced Artificial Intelligence. Whether you need a startup pitch, a product launch presentation, a personal brand statement, or an investor deck, this app leverages AI via an **n8n-powered workflow** to craft tailored content in minutes.
 
 ## ✨ Features
 
-*   **AI-Powered Pitch Generation:** Generate high-quality pitches for various types (Startup, Product, Personal, Investor) using Groq's fast AI models.
-*   **Customizable Prompts:** Provide your core idea and additional details to guide the AI in generating relevant content.
-*   **Pitch History:** View and manage all your previously generated pitches in a dedicated dashboard.
-*   **Full Pitch View:** Access the complete content of any generated pitch on a dedicated detail page.
-*   **Copy to Clipboard:** Easily copy generated pitch content for use in other documents or presentations.
-*   **Secure Authentication:** User authentication powered by Supabase magic links.
-*   **Responsive Design:** A clean and intuitive user interface that works seamlessly across desktop and mobile devices.
-*   **Engaging Animations:** Subtle UI animations using Framer Motion enhance the user experience.
-*   **Documentation:** Includes a `doc/` folder with a PRD outline and wireframe descriptions.
+* **AI-Powered Pitch Generation via n8n:** Generate high-quality pitches for various types (Startup, Product, Personal, Investor) using a connected n8n workflow that integrates Groq’s fast AI models.
+* **Customizable Prompts:** Provide your core idea and additional details to guide the AI in generating relevant content.
+* **Pitch History:** View and manage all your previously generated pitches in a dedicated dashboard.
+* **Full Pitch View:** Access the complete content of any generated pitch on a dedicated detail page.
+* **Copy to Clipboard:** Easily copy generated pitch content for use in other documents or presentations.
+* **Secure Authentication:** User authentication powered by Supabase magic links.
+* **Responsive Design:** A clean and intuitive user interface that works seamlessly across desktop and mobile devices.
+* **Engaging Animations:** Subtle UI animations using Framer Motion enhance the user experience.
+* **Documentation:** Includes a `doc/` folder with a PRD outline and wireframe descriptions.
 
 ## 🛠️ Technologies Used
 
-*   **Framework:** Next.js 15 (App Router)
-*   **React:** React 18
-*   **Styling:** Tailwind CSS
-*   **UI Components:** shadcn/ui
-*   **Animations:** Framer Motion
-*   **AI Integration:** Vercel AI SDK with Groq (llama-3.1-8b-instant)
-*   **Database:** MongoDB (via Prisma ORM)
-*   **Authentication:** Supabase Auth
-*   **Deployment:** Vercel
+* **Framework:** Next.js 15 (App Router)
+* **React:** React 18
+* **Styling:** Tailwind CSS
+* **UI Components:** shadcn/ui
+* **Animations:** Framer Motion
+* **AI Integration:** n8n workflow + Groq API (via webhook)
+* **Database:** MongoDB (via Prisma ORM)
+* **Authentication:** Supabase Auth
+* **Deployment:** Vercel
 
 ## ⚙️ Getting Started
 
@@ -36,16 +36,16 @@ Follow these steps to set up and run the project locally.
 
 Make sure you have the following installed:
 
-*   Node.js (v18 or higher recommended)
-*   npm (or pnpm/yarn)
-*   Git
+* Node.js (v18 or higher recommended)
+* npm (or pnpm/yarn)
+* Git
 
 ### 1. Clone the Repository
 
-\`\`\`bash
+```bash
 git clone https://github.com/NareenAsad/AI-Powered-Web-App.git
 cd AI-Powered-Web-App
-\`\`\`
+
 
 ### 2. Install Dependencies
 

@@ -59,10 +59,17 @@ export function PitchGenerator() {
       console.log("Generated pitch response:", data)
 
       // Expecting { title: string, pitch: string }
-      setGeneratedPitch({
+      const pitchText =
+      typeof data.pitch === "string"
+        ? data.pitch
+        : typeof data.pitch?.text === "string"
+        ? data.pitch.text
+        : ""
+
+    setGeneratedPitch({
       title: data.title || "",
-      pitch: data.pitch || "",
-      })
+      pitch: pitchText, // only the actual markdown content
+    })
 
       toast({
         title: "Pitch generated successfully!",
@@ -88,11 +95,11 @@ export function PitchGenerator() {
       const shortTitle = idea.length > 50 ? idea.slice(0, 47) + "..." : idea
 
       const formattedContent = `
-${pitchLabel}: ${shortTitle}
-${type}
-Generated on ${new Date().toLocaleDateString("en-GB")}
+      ${pitchLabel}: ${shortTitle}
+      ${type}
+      Generated on ${new Date().toLocaleDateString("en-GB")}
 
-${generatedPitch.pitch}
+      ${generatedPitch.pitch}
       `.trim()
 
       const response = await fetch("/api/save-pitch", {
@@ -200,9 +207,13 @@ ${generatedPitch.pitch}
           </CardHeader>
           <CardContent>
             <div className="bg-slate-50 p-4 rounded-lg prose prose-slate max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {generatedPitch.pitch}
-              </ReactMarkdown>
+              {typeof generatedPitch.pitch === "string" ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {generatedPitch.pitch}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-red-600">Invalid pitch content</p>
+              )}
             </div>
             <div className="flex gap-2 mt-4">
               <Button variant="outline" onClick={() => navigator.clipboard.writeText(generatedPitch.pitch)}>

@@ -1,16 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
-import { cookies } from "next/headers"
-import { generateText } from "ai"
-import { groq } from "@ai-sdk/groq"
-import { savePitch } from "@/lib/actions/pitches"
 
 export async function POST(request: NextRequest) {
   try {
 
     const { idea, pitchType, details } = await request.json();
 
-    const response = await fetch("http://localhost:5678/webhook-test/generate-pitch", {
+    const response = await fetch("https://nareenasad.app.n8n.cloud/webhook-test/generate-pitch", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
