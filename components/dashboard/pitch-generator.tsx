@@ -9,8 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Sparkles, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 
 const pitchTypes = [
   { value: "startup", label: "Startup Pitch" },
@@ -18,6 +16,150 @@ const pitchTypes = [
   { value: "personal", label: "Personal Brand" },
   { value: "investor", label: "Investor Presentation" },
 ]
+
+// Enhanced FormattedPitchContent component for better formatting
+interface FormattedPitchContentProps {
+  content: string
+  className?: string
+}
+
+function FormattedPitchContent({ content, className = "" }: FormattedPitchContentProps) {
+  // Function to parse and format the content
+  const formatContent = (text: string) => {
+    // First, extract title if it exists
+    const titleMatch = text.match(/^(?:TITLE:\s*|#\s*)(.*?)(?:\n|$)/i)
+    let title = ""
+    let bodyContent = text
+
+    if (titleMatch) {
+      title = titleMatch[1].trim()
+      bodyContent = text.replace(/^(?:TITLE:\s*|#\s*).*?(?:\n|$)/i, '').trim()
+    }
+
+    // Process the body content
+    const sections = bodyContent
+      .split(/(?=\d+\.\s)/)
+      .filter(section => section.trim())
+      .map((section, index) => {
+        const trimmedSection = section.trim()
+        if (!trimmedSection) return null
+        
+        // Check if this is a numbered section
+        const isNumberedSection = /^\d+\.\s/.test(trimmedSection)
+        
+        if (isNumberedSection) {
+          // Extract section title and content
+          const lines = trimmedSection.split('\n')
+          const sectionTitle = lines[0].replace(/^\d+\.\s*/, '').replace(/\*\*/g, '').trim()
+          const sectionContent = lines.slice(1).join('\n').trim()
+          
+          return (
+            <div key={index} className="mb-8">
+              <h3 className="font-semibold text-lg mb-4 text-gray-800 border-b border-gray-200 pb-2">
+                {index + 1}. {sectionTitle}
+              </h3>
+              <div className="pl-2">
+                {formatSectionContent(sectionContent)}
+              </div>
+            </div>
+          )
+        } else {
+          // Handle non-numbered content
+          return (
+            <div key={index} className="mb-6">
+              {formatSectionContent(trimmedSection)}
+            </div>
+          )
+        }
+      }).filter(Boolean)
+
+    return (
+      <div>
+        {title && (
+          <h1 className="text-2xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-blue-500">
+            {title}
+          </h1>
+        )}
+        {sections}
+      </div>
+    )
+  }
+
+  // Function to format section content with better bullet point detection
+  const formatSectionContent = (text: string) => {
+    if (!text.trim()) return null
+
+    return text
+      .split('\n')
+      .map((line, lineIndex) => {
+        const trimmedLine = line.trim()
+        if (!trimmedLine) return <br key={lineIndex} />
+        
+        // Remove markdown formatting
+        const cleanLine = trimmedLine.replace(/\*\*/g, '').replace(/\*/g, '')
+        
+        // Check if line contains a colon (indicating a label: description format)
+        if (cleanLine.includes(':')) {
+          const colonIndex = cleanLine.indexOf(':')
+          const label = cleanLine.substring(0, colonIndex).trim()
+          const description = cleanLine.substring(colonIndex + 1).trim()
+          
+          // Check if this should be a bullet point based on common pitch keywords
+          const bulletKeywords = [
+            'core features', 'user benefits', 'problem solved',
+            'primary users', 'user personas', 'market segment', 
+            'competitive landscape', 'pricing strategy', 'value proposition',
+            'go-to-market', 'marketing channels', 'timeline',
+            'key performance', 'revenue targets', 'user adoption',
+            'core passion', 'mission', 'values',
+            'key achievements', 'experience highlights', 'skills developed',
+            'professional principles', 'industry values', 'quality standards',
+            'target audience', 'client types', 'problems solved',
+            'short-term goals', 'long-term vision', 'growth areas',
+            'contact methods', 'collaboration opportunities', 'next steps',
+            'problem identified', 'current solutions', 'our solution', 'solution benefits',
+            'total addressable', 'market growth', 'market opportunity', 'customer segments',
+            'revenue streams', 'pricing strategy', 'cost structure', 'unit economics',
+            'revenue forecast', 'growth metrics', 'profitability timeline', 'funding efficiency',
+            'founding team', 'advisory board', 'hiring plan', 'team strengths',
+            'amount needed', 'use of funds', 'timeline', 'milestones',
+            'expected returns', 'exit strategy', 'risk mitigation', 'investment terms'
+          ]
+          
+          const shouldBeBullet = bulletKeywords.some(keyword => 
+            label.toLowerCase().includes(keyword) || 
+            label.toLowerCase().replace(/[^a-z\s]/g, '').includes(keyword)
+          )
+          
+          if (shouldBeBullet) {
+            return (
+              <div key={lineIndex} className="mb-3 flex items-start">
+                <span className="text-blue-600 mr-3 font-bold text-lg leading-6">•</span>
+                <div className="flex-1">
+                  <span className="font-semibold text-gray-800">{label}:</span>
+                  <span className="text-gray-700 ml-2">{description}</span>
+                </div>
+              </div>
+            )
+          }
+        }
+        
+        // Regular paragraph with justified text
+        return (
+          <p key={lineIndex} className="text-gray-700 mb-3 text-justify leading-relaxed">
+            {cleanLine}
+          </p>
+        )
+      })
+      .filter(Boolean)
+  }
+
+  return (
+    <div className={`prose prose-gray max-w-none ${className}`}>
+      {formatContent(content)}
+    </div>
+  )
+}
 
 // Function to clean and format the generated pitch content
 function cleanPitchContent(rawContent: any): string {
@@ -334,10 +476,11 @@ export function PitchGenerator() {
             <CardDescription>Your AI-generated pitch is ready. You can copy, edit, or save it.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-slate-50 p-4 rounded-lg prose prose-slate max-w-none border">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {generatedPitch.pitch}
-              </ReactMarkdown>
+            <div className="bg-slate-50 p-6 rounded-lg border">
+              <FormattedPitchContent 
+                content={generatedPitch.pitch} 
+                className="text-slate-800"
+              />
             </div>
             <div className="flex gap-2 mt-4">
               <Button variant="outline" onClick={handleCopyToClipboard}>
