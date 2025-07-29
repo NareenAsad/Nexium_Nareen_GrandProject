@@ -1,3 +1,4 @@
+
 # AI Pitch Writer
 
 ## 🚀 Project Overview
@@ -45,20 +46,20 @@ Make sure you have the following installed:
 ```bash
 git clone https://github.com/NareenAsad/AI-Powered-Web-App.git
 cd AI-Powered-Web-App
-
+```
 
 ### 2. Install Dependencies
 
-\`\`\`bash
+```bash
 npm install --legacy-peer-deps
-\`\`\`
-*Note: The \`--legacy-peer-deps\` flag is used to resolve potential peer dependency conflicts with React 19 Release Candidates.*
+```
+*Note: The `--legacy-peer-deps` flag is used to resolve potential peer dependency conflicts with React 19 Release Candidates.*
 
 ### 3. Environment Variables
 
-Create a \`.env.local\` file in the root of your project and add the following environment variables. You can use \`.env.example\` as a template.
+Create a `.env.local` file in the root of your project and add the following environment variables. You can use `.env.example` as a template.
 
-\`\`\`plaintext
+```plaintext
 # Database - Replace with your actual MongoDB connection string
 DATABASE_URL="mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/<dbname>?retryWrites=true&w=majority"
 
@@ -68,35 +69,34 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 # Groq API - Your provided API key
 GROQ_API_KEY=gsk_YOUR_GROQ_API_KEY
+```
 
-\`\`\`
-
-*   **MongoDB Setup:** Ensure you have a MongoDB Atlas cluster set up and replace `<username>`, `<password>`, `<cluster-name>`, and `<dbname>` with your actual database credentials.
-*   **Supabase Setup:** Create a Supabase project and configure authentication (e.g., Email Magic Link). Get your project URL and Anon Key from your Supabase project settings.
-*   **Groq API Key:** Obtain an API key from Groq and replace `gsk_YOUR_GROQ_API_KEY`.
+* **MongoDB Setup:** Ensure you have a MongoDB Atlas cluster set up and replace `<username>`, `<password>`, `<cluster-name>`, and `<dbname>` with your actual database credentials.
+* **Supabase Setup:** Create a Supabase project and configure authentication (e.g., Email Magic Link). Get your project URL and Anon Key from your Supabase project settings.
+* **Groq API Key:** Obtain an API key from Groq and replace `gsk_YOUR_GROQ_API_KEY`.
 
 ### 4. Initialize Prisma and Push Schema
 
 After configuring your `DATABASE_URL`, initialize Prisma and push your schema to MongoDB:
 
-\`\`\`bash
+```bash
 npm run db:generate
 npm run db:push
-\`\`\`
+```
 
 ### 5. Run the Development Server
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ### 6. Build for Production
 
-\`\`\`bash
+```bash
 npm run build
-\`\`\`
+```
 
 ## 🤝 Contributing
 
