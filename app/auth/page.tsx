@@ -62,7 +62,7 @@ export default function AuthPage() {
           <CardContent>
             <Button
               variant="outline"
-              className="w-full border-gray-600 text-white hover:bg-gray-700"
+              className="w-full border-gray-600 text-white"
               onClick={() => setEmailSent(false)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

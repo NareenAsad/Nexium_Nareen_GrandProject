@@ -22,5 +22,5 @@ export default function AuthCallbackPage() {
     handleSession()
   }, [])
 
-  return <p className="text-center mt-20 bg-gradient-to-br from-indigo-800 via-purple-800 to-gray-900">Logging you in, please wait...</p>
+  return <p className="text-center mt-20">Logging you in, please wait...</p>
 }
