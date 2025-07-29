@@ -33,7 +33,7 @@ export default async function DashboardPage() {
   const userPitches = pitches || []
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-800 via-purple-800 to-gray-900">
       <DashboardHeader user={user} />
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

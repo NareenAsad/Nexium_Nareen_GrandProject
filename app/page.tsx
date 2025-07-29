@@ -5,9 +5,7 @@ import { Footer } from "@/components/footer"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      {" "}
-      {/* Changed background gradient */}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-800 via-purple-800 to-gray-900 text-white">
       <Header />
       <main>
         <Hero />
@@ -17,3 +15,4 @@ export default function HomePage() {
     </div>
   )
 }
+

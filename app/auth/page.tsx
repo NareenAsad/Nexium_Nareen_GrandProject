@@ -1,12 +1,17 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useAuth } from "@/app/providers"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Mail, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
@@ -43,17 +48,23 @@ export default function AuthPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-800 via-purple-800 to-gray-900 p-4 text-white">
+        <Card className="w-full max-w-md bg-gray-800 border-gray-700 text-white">
           <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <Mail className="w-6 h-6 text-green-600" />
+            <div className="mx-auto w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center mb-4">
+              <Mail className="w-6 h-6 text-green-400" />
             </div>
             <CardTitle>Check your email</CardTitle>
-            <CardDescription>We've sent a magic link to {email}. Click the link to sign in.</CardDescription>
+            <CardDescription className="text-gray-300">
+              We've sent a magic link to {email}. Click the link to sign in.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full bg-transparent" onClick={() => setEmailSent(false)}>
+            <Button
+              variant="outline"
+              className="w-full border-gray-600 text-white hover:bg-gray-700"
+              onClick={() => setEmailSent(false)}
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to login
             </Button>
@@ -64,11 +75,13 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-800 via-purple-800 to-gray-900 p-4 text-white">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-700 text-white">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>Enter your email to receive a magic link for sign in</CardDescription>
+          <CardDescription className="text-gray-300">
+            Enter your email to receive a magic link for sign in
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignIn} className="space-y-4">
@@ -79,16 +92,23 @@ export default function AuthPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full"
+                className="w-full bg-gray-700 border-gray-600 placeholder-gray-400 text-white"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading || !email}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || !email}
+            >
               {loading ? "Sending..." : "Send magic link"}
             </Button>
           </form>
           <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-slate-600 hover:text-slate-900">
-              ← Back to home
+            <Link
+              href="/"
+              className="text-sm text-gray-400 hover:text-gray-80"
+            >
+              Back to home
             </Link>
           </div>
         </CardContent>

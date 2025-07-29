@@ -3,15 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { LogOut, User, Settings } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { useAuth } from "@/app/providers"
 import Link from "next/link"
 
 interface DashboardHeaderProps {
-  // Make email optional to match Supabase User type
   user: {
     id: string
-    email?: string | null // Changed to optional
+    email?: string | null
   }
 }
 
@@ -24,11 +23,11 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   }
 
   return (
-    <header className="bg-white border-b border-slate-200">
+    <header className="bg-gradient-to-r from-indigo-800 via-purple-800 to-gray-900 border-b border-gray-700">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">AI Pitch Writer</h1>
-          <p className="text-sm text-slate-600">Welcome back, {user.email}</p>
+          <h1 className="text-2xl font-bold text-white">AI Pitch Writer</h1>
+          <p className="text-sm text-gray-300">Welcome back, {user.email}</p>
         </div>
 
         <DropdownMenu>
