@@ -1,5 +1,4 @@
 "use client"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,17 +7,21 @@ import Link from "next/link"
 import { DeletePitchButton } from "@/components/delete-pitch-button"
 import { useRouter } from "next/navigation"
 
+// Update interface to match database columns exactly (including user_id)
 interface Pitch {
   id: string
+  user_id: string
   title: string
-  type: string
-  createdAt: Date
   content: string
+  idea: string | null
+  details: string | null
+  pitch_type: string | null
+  created_at: string | null
 }
 
 interface PitchHistoryProps {
   pitches: Pitch[]
-  userId: string // Accept userId prop
+  userId: string
 }
 
 export function PitchHistory({ pitches, userId }: PitchHistoryProps) {
@@ -28,6 +31,9 @@ export function PitchHistory({ pitches, userId }: PitchHistoryProps) {
   const handlePitchDeleted = () => {
     router.refresh() // Revalidate the data for the current page
   }
+
+  // Debug: Log the pitches to see what we're getting
+  console.log("Pitches in component:", pitches)
 
   return (
     <Card>
@@ -49,19 +55,19 @@ export function PitchHistory({ pitches, userId }: PitchHistoryProps) {
           <div className="space-y-4">
             {pitches.map((pitch) => (
               <div key={pitch.id} className="border rounded-lg p-4 hover:bg-slate-50 transition-colors relative">
-                {" "}
-                {/* Added relative for positioning */}
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-medium text-sm line-clamp-2">{pitch.title}</h3>
                   <Badge variant="secondary" className="text-xs">
-                    {pitch.type}
+                    {pitch.pitch_type || 'Pitch'} {/* Handle null values */}
                   </Badge>
                 </div>
                 <div className="flex items-center text-xs text-slate-500 mb-3">
                   <Calendar className="w-3 h-3 mr-1" />
-                  {new Date(pitch.createdAt).toLocaleDateString()}
+                  {pitch.created_at ? new Date(pitch.created_at).toLocaleDateString() : 'Unknown date'}
                 </div>
-                <p className="text-xs text-slate-600 line-clamp-3 mb-3">{pitch.content.substring(0, 150)}...</p>
+                <p className="text-xs text-slate-600 line-clamp-3 mb-3">
+                  {pitch.content.substring(0, 150)}...
+                </p>
                 <div className="flex justify-between items-center">
                   <Link href={`/dashboard/pitches/${pitch.id}`}>
                     <Button variant="ghost" size="sm" className="text-xs">

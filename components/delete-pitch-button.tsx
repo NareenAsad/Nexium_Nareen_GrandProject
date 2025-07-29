@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { deletePitch } from "@/lib/actions/pitches"
+import { deletePitch } from "@/lib/actions/pitches-hybrid"
 
 interface DeletePitchButtonProps {
   pitchId: string

@@ -19,6 +19,94 @@ const pitchTypes = [
   { value: "investor", label: "Investor Presentation" },
 ]
 
+// Function to clean and format the generated pitch content
+function cleanPitchContent(rawContent: any): string {
+  if (!rawContent) return ""
+  
+  let content = ""
+  
+  // Handle different response formats
+  if (typeof rawContent === "string") {
+    content = rawContent
+  } else if (typeof rawContent === "object") {
+    // Try different possible properties
+    content = rawContent.text || rawContent.content || rawContent.pitch || rawContent.message || ""
+    
+    // If it's still an object, try to stringify it
+    if (typeof content !== "string") {
+      content = JSON.stringify(rawContent)
+    }
+  }
+  
+  // Clean the content
+  content = content
+    // Remove extra whitespace and normalize line breaks
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    // Remove multiple consecutive newlines (keep max 2 for paragraph breaks)
+    .replace(/\n{3,}/g, '\n\n')
+    // Remove leading/trailing whitespace
+    .trim()
+    // Remove any potential markdown artifacts or unwanted formatting
+    .replace(/^```[\w]*\n/, '') // Remove opening code blocks
+    .replace(/\n```$/, '') // Remove closing code blocks
+    // Clean up any malformed headers
+    .replace(/^#+\s*$/gm, '') // Remove empty headers
+    // Remove excessive spaces
+    .replace(/[ \t]+/g, ' ')
+    // Clean up list formatting
+    .replace(/^\s*[-*+]\s+/gm, '- ') // Standardize bullet points
+    .replace(/^\s*(\d+\.)\s+/gm, '$1 ') // Clean numbered lists
+  
+  return content
+}
+
+// Function to extract or generate a title from the pitch content
+function extractTitle(content: string, idea: string, pitchType: string): string {
+  if (!content) return `${pitchTypes.find(p => p.value === pitchType)?.label || "Pitch"}: ${idea}`
+  
+  // Since your n8n workflow doesn't generate a separate title, 
+  // let's create a meaningful one from the idea and pitch type
+  const pitchTypeLabel = pitchTypes.find(p => p.value === pitchType)?.label || "Pitch"
+  
+  // Try to find the first heading in the content (if AI added one)
+  const headingMatch = content.match(/^#+\s*(.+)$/m)
+  if (headingMatch) {
+    const title = headingMatch[1].trim()
+    console.log("Found heading title:", title)
+    return title
+  }
+  
+  // Try to find text after "Executive Summary" or similar intro sections
+  const execSummaryMatch = content.match(/(?:Executive Summary|Overview)[:\-\s]+([^\n]+)/i)
+  if (execSummaryMatch) {
+    const title = execSummaryMatch[1].trim()
+    if (title.length > 10 && title.length < 100) {
+      console.log("Found executive summary title:", title)
+      return title
+    }
+  }
+  
+  // Create a clean title from the idea
+  let cleanIdea = idea.trim()
+  // Capitalize first letter if needed
+  cleanIdea = cleanIdea.charAt(0).toUpperCase() + cleanIdea.slice(1)
+  
+  // Remove common prefixes like "A mobile app that..." 
+  cleanIdea = cleanIdea
+    .replace(/^(A|An|The)\s+/i, '')
+    .replace(/^(mobile\s+app|web\s+app|app|website|platform|service|tool)\s+(that|for|to)\s+/i, '')
+  
+  // Truncate if too long
+  if (cleanIdea.length > 60) {
+    cleanIdea = cleanIdea.substring(0, 57) + "..."
+  }
+  
+  const finalTitle = `${pitchTypeLabel}: ${cleanIdea}`
+  console.log("Generated title from idea:", finalTitle)
+  return finalTitle
+}
+
 export function PitchGenerator() {
   const [idea, setIdea] = useState("")
   const [type, setType] = useState("")
@@ -56,20 +144,40 @@ export function PitchGenerator() {
       }
 
       const data = await response.json()
-      console.log("Generated pitch response:", data)
+      console.log("Raw generated pitch response:", data)
 
-      // Expecting { title: string, pitch: string }
-      const pitchText =
-      typeof data.pitch === "string"
-        ? data.pitch
-        : typeof data.pitch?.text === "string"
-        ? data.pitch.text
-        : ""
+      // Check what properties are available in the response
+      console.log("Available properties:", Object.keys(data))
+      console.log("data.title:", data.title)
+      console.log("data.pitch:", data.pitch)
 
-    setGeneratedPitch({
-      title: data.title || "",
-      pitch: pitchText, // only the actual markdown content
-    })
+      // Clean the pitch content
+      const cleanedPitch = cleanPitchContent(data.pitch)
+      console.log("Cleaned pitch content:", cleanedPitch)
+
+      // Extract or use provided title - since n8n doesn't generate titles, create one
+      let title = ""
+      if (data.title && typeof data.title === "string" && data.title.trim()) {
+        title = data.title.trim()
+        console.log("Using provided title:", title)
+      } else {
+        // Generate a meaningful title since n8n workflow doesn't provide one
+        title = extractTitle(cleanedPitch, idea, type)
+        console.log("Generated title:", title)
+      }
+
+      // Validate that we have content
+      if (!cleanedPitch || cleanedPitch.length < 10) {
+        throw new Error("Generated pitch content is too short or invalid")
+      }
+
+      setGeneratedPitch({
+        title: title,
+        pitch: cleanedPitch,
+      })
+
+      // Debug: Log the final result
+      console.log("Final pitch object:", { title, pitch: cleanedPitch })
 
       toast({
         title: "Pitch generated successfully!",
@@ -79,7 +187,7 @@ export function PitchGenerator() {
       console.error("Pitch generation error:", error)
       toast({
         title: "Generation failed",
-        description: error instanceof Error ? error.message : "Unexpected error.",
+        description: error instanceof Error ? error.message : "Unexpected error occurred.",
         variant: "destructive",
       })
     } finally {
@@ -94,13 +202,9 @@ export function PitchGenerator() {
       const pitchLabel = pitchTypes.find((p) => p.value === type)?.label || "Pitch"
       const shortTitle = idea.length > 50 ? idea.slice(0, 47) + "..." : idea
 
-      const formattedContent = `
-      ${pitchLabel}: ${shortTitle}
-      ${type}
-      Generated on ${new Date().toLocaleDateString("en-GB")}
-
-      ${generatedPitch.pitch}
-      `.trim()
+      // Create a clean, formatted version for saving
+      const formattedContent = generatedPitch.pitch
+      const saveTitle = generatedPitch.title || `${pitchLabel}: ${shortTitle}`
 
       const response = await fetch("/api/save-pitch", {
         method: "POST",
@@ -109,7 +213,7 @@ export function PitchGenerator() {
         },
         body: JSON.stringify({
           content: formattedContent,
-          title: `${pitchLabel}: ${shortTitle}`,
+          title: saveTitle,
           pitchType: type,
           idea,
           details,
@@ -117,17 +221,41 @@ export function PitchGenerator() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save pitch")
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to save pitch")
       }
 
       toast({
         title: "Template saved",
         description: "Your pitch has been saved successfully.",
       })
+
+      // Optionally refresh the page or update the pitch history
+      // You might want to add a callback here to refresh the pitch list
+      
     } catch (error) {
+      console.error("Save error:", error)
       toast({
         title: "Save failed",
         description: error instanceof Error ? error.message : "Something went wrong.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleCopyToClipboard = async () => {
+    if (!generatedPitch) return
+    
+    try {
+      await navigator.clipboard.writeText(generatedPitch.pitch)
+      toast({
+        title: "Copied to clipboard",
+        description: "Pitch content has been copied to your clipboard.",
+      })
+    } catch (error) {
+      toast({
+        title: "Copy failed",
+        description: "Unable to copy to clipboard. Please try selecting and copying manually.",
         variant: "destructive",
       })
     }
@@ -206,17 +334,13 @@ export function PitchGenerator() {
             <CardDescription>Your AI-generated pitch is ready. You can copy, edit, or save it.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-slate-50 p-4 rounded-lg prose prose-slate max-w-none">
-              {typeof generatedPitch.pitch === "string" ? (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {generatedPitch.pitch}
-                </ReactMarkdown>
-              ) : (
-                <p className="text-red-600">Invalid pitch content</p>
-              )}
+            <div className="bg-slate-50 p-4 rounded-lg prose prose-slate max-w-none border">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {generatedPitch.pitch}
+              </ReactMarkdown>
             </div>
             <div className="flex gap-2 mt-4">
-              <Button variant="outline" onClick={() => navigator.clipboard.writeText(generatedPitch.pitch)}>
+              <Button variant="outline" onClick={handleCopyToClipboard}>
                 Copy to Clipboard
               </Button>
               <Button variant="outline" onClick={handleSaveTemplate}>
