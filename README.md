@@ -1,5 +1,6 @@
 
 # AI Pitch Writer
+🎥 [Watch Demo Video](https://www.loom.com/share/56e5334bdc62422b875af03ba7734799?sid=8caea347-32c4-4cd8-9006-e2c6a9d129d6)
 
 ## 🚀 Project Overview
 
